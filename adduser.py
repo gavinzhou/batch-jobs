@@ -13,12 +13,12 @@ writepassword = os.environ["WritePassword"]
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
+
 class CreateApis:
     def __init__(self, username, kongadminapi, writepassword):
         self.username = username
         self.kongadminapi = kongadminapi
         self.writepassword = writepassword
-
 
     def add_apis(self):
         name = self.username + "-influxdb"
@@ -31,16 +31,16 @@ class CreateApis:
             'request_host': request_host
         }
         return True if post(posturl, data=data).status_code == 201 else False
-    
-    
+
     def enable_jwt(self):
-        posturl = self.kongadminapi + "/apis/" + self.username + "-influxdb/plugins"
+        posturl = self.kongadminapi + \
+            "/apis/" + self.username + "-influxdb/plugins"
         data = {'name': 'jwt'}
         return True if post(posturl, data=data).status_code == 201 else False
-    
-    
+
     def enable_correlation_id(self):
-        posturl = self.kongadminapi + "/apis/" + self.username + "-influxdb/plugins"
+        posturl = self.kongadminapi + \
+            "/apis/" + self.username + "-influxdb/plugins"
         data = {
             'name': 'correlation-id',
             'config.header_name': 'Orangesys-Request-ID',
@@ -48,10 +48,10 @@ class CreateApis:
             'config.echo_downstream': 'false'
         }
         return True if post(posturl, data=data).status_code == 201 else False
-    
-    
+
     def request_transformer(self):
-        posturl = self.kongadminapi + "/apis/" + self.username + "-influxdb/plugins"
+        posturl = self.kongadminapi + \
+            "/apis/" + self.username + "-influxdb/plugins"
         querystring = "u:_write,p:" + self.writepassword
         data = {
             'name': 'request-transformer',
@@ -68,13 +68,11 @@ class CreateJwtToken:
         self.key = key
         self.secret = secret
 
-
     def add_consumer(self):
         posturl = self.kongadminapi + "/consumers"
-        data = { 'username': self.username}
+        data = {'username': self.username}
         return True if post(posturl, data=data).status_code == 201 else False
-    
-    
+
     def add_jwt(self):
         posturl = self.kongadminapi + "/consumers/" + self.username + "/jwt"
         data = {
@@ -86,7 +84,7 @@ class CreateJwtToken:
 
 def main():
     FORMAT = '%(asctime)s %(levelname)s %(message)s'
-    logging.basicConfig(format = FORMAT, level=logging.INFO)
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
     c = CreateApis(username, kongadminapi, writepassword)
     if c.add_apis():
         c.enable_jwt()
