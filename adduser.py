@@ -35,7 +35,7 @@ class CreateApis:
     def add_grafana_apis(self):
         name = self.username + "-grafana"
         upstream_url = "http://" + name + ".default"
-        request_host = self.username + ".g.orangesys"
+        request_host = self.username + ".g.orangesys.io"
         posturl = self.kongadminapi + "/apis"
         data = {
             'name': name,
