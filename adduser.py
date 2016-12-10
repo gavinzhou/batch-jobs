@@ -20,10 +20,22 @@ class CreateApis:
         self.kongadminapi = kongadminapi
         self.writepassword = writepassword
 
-    def add_apis(self):
+    def add_influxdb_apis(self):
         name = self.username + "-influxdb"
         upstream_url = "http://" + name + ".default"
         request_host = self.username + ".i.orangesys.io"
+        posturl = self.kongadminapi + "/apis"
+        data = {
+            'name': name,
+            'upstream_url': upstream_url,
+            'request_host': request_host
+        }
+        return True if post(posturl, data=data).status_code == 201 else False
+
+    def add_grafana_apis(self):
+        name = self.username + "-grafana"
+        upstream_url = "http://" + name + ".default"
+        request_host = self.username + ".g.orangesys"
         posturl = self.kongadminapi + "/apis"
         data = {
             'name': name,
@@ -86,7 +98,7 @@ def main():
     FORMAT = '%(asctime)s %(levelname)s %(message)s'
     logging.basicConfig(format=FORMAT, level=logging.INFO)
     c = CreateApis(username, kongadminapi, writepassword)
-    if c.add_apis():
+    if c.add_influxdb_apis() and c.add_grafana_apis():
         c.enable_jwt()
         c.enable_correlation_id()
         c.request_transformer()
